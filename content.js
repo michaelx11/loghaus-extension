@@ -29,7 +29,8 @@ function getScrollPositionByOffset(offset) {
   console.log(documentRange);
   var boundingRect = documentRange.getBoundingClientRect();
   console.log(boundingRect);
-  return boundingRect.top;
+  // We need to compute based on current Y, since the rects are relative
+  return window.scrollY + boundingRect.top;
 }
 
 function findAllMatches(sourceText, regexStr) {
@@ -54,6 +55,10 @@ function searchAndComputeIndex(text, regexStrings, regexDescriptions) {
       allMatches.push([i, regexDescriptions[i], scrollOffset]);
     }
   }
+
+  allMatches.sort(function(a, b) {
+    return a[2] - b[2];
+  });
   return allMatches;
 }
 
@@ -81,13 +86,17 @@ function generateTableOfContents(listHighlights) {
 }
 
 function embedDiv(tableOfContents) {
-  var div = document.createElement( 'div' );
+  var currentDiv = document.getElementById("tableOfContentsDiv");
+  if (currentDiv) {
+    currentDiv.remove();
+  }
+  var div = document.createElement('tableOfContentsDiv');
 
   //append all elements
   document.body.appendChild( div );
   div.append(tableOfContents);
   //set attributes for div
-  div.id = 'myDivId';
+  div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
   div.style.top = '0%';
   div.style.left = '80%';
@@ -108,8 +117,8 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     console.log("runtime listener called!");
     // If the received message has the expected format...
     console.log(msg);
-    var regexStrings = ['SCHEDULE_WATCHDOG'];
-    var regexDescriptions = ['Watchdog Scheduled!'];
+    var regexStrings = ['SCHEDULE_WATCHDOG', 'Snapcode Found'];
+    var regexDescriptions = ['Watchdog Scheduled!', 'Snapcode found!'];
     if (msg.text === 'report_back') {
         generateRange();
         var targetText = extractTargetElement();
