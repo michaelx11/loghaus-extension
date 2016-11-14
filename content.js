@@ -150,18 +150,25 @@ function extractTargetElement() {
 // --- Full Generation ---
 
 function fullGeneration() {
-  var regexStrings = [
-    'onResponseReceived'
-  ];
-  var regexDescriptions = [
-    'On response received'
-  ];
-  var colorList = generateColorList(regexStrings.length);
-  generateRange();
-  var targetText = extractTargetElement();
-  var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
-  var tableOfContents = generateTableOfContents(res, colorList);
-  embedDiv(tableOfContents);
+  chrome.storage.sync.get({
+    rulesJsonString: "",
+  }, function(items) {
+    var rules = JSON.parse(items.rulesJsonString);
+    var regexStrings = [];
+    var regexDescriptions = [];
+    for (var i = 0; i < rules.length; i++) {
+      regexStrings.push(rules[i][0]);
+      regexDescriptions.push(rules[i][1]);
+    }
+    console.log(regexStrings);
+    console.log(regexDescriptions);
+    var colorList = generateColorList(regexStrings.length);
+    generateRange();
+    var targetText = extractTargetElement();
+    var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
+    var tableOfContents = generateTableOfContents(res, colorList);
+    embedDiv(tableOfContents);
+  });
 }
 
 // Listen for messages
