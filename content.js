@@ -1,5 +1,47 @@
 var documentRange = null;
 
+// === Search helper utilities ===
+
+function generateRange() {
+  documentRange = document.createRange();
+}
+
+function getScrollPositionByOffset(offset) {
+  var parentPre = extractTargetElement();
+  // The parent pre element contains multiple child text nodes
+  var childNodeStartOffset = 0;
+  var containingChildNode = null;
+  for (var i = 0; i < parentPre.childNodes.length; i++) {
+    var childTextNode = parentPre.childNodes[i];
+    console.log(childNodeStartOffset + " " + childTextNode.length);
+    if (offset >= childNodeStartOffset && offset <= childNodeStartOffset + childTextNode.length) {
+      containingChildNode = childTextNode;
+      break;
+    }
+    childNodeStartOffset += childTextNode.length;
+  }
+  if (!containingChildNode) {
+    return null;
+  }
+
+  documentRange.setStart(containingChildNode, offset - childNodeStartOffset);
+  documentRange.setEnd(containingChildNode, offset - childNodeStartOffset);
+  console.log(documentRange);
+  var boundingRect = documentRange.getBoundingClientRect();
+  console.log(boundingRect);
+  return boundingRect.top;
+}
+
+// Return [[ruleIndex, shortDescription, offset], ...]
+function searchAndComputeIndex(text) {
+
+  var textOffset = text.lastIndexOf("SCHEDULE_WATCHDOG");
+  var scrollOffset = getScrollPositionByOffset(textOffset);
+  return [[0, "SCHEDULE_WATCHDOG", scrollOffset]];
+}
+
+// === UI Helper Utilities ===
+
 function scrollGenerator(offset) {
   return function() {
     window.scroll(0, offset);
@@ -38,49 +80,12 @@ function embedDiv(tableOfContents) {
   div.style.opacity = '0.5';
 }
 
-function generateRange() {
-  documentRange = document.createRange();
-}
-
 // This works for log files where the body contains a pre with text
 // NOTE: customize this!
 function extractTargetElement() {
   return document.body.children[0];
 }
 
-function getScrollPositionByOffset(offset) {
-  var parentPre = extractTargetElement();
-  // The parent pre element contains multiple child text nodes
-  var childNodeStartOffset = 0;
-  var containingChildNode = null;
-  for (var i = 0; i < parentPre.childNodes.length; i++) {
-    var childTextNode = parentPre.childNodes[i];
-    console.log(childNodeStartOffset + " " + childTextNode.length);
-    if (offset >= childNodeStartOffset && offset <= childNodeStartOffset + childTextNode.length) {
-      containingChildNode = childTextNode;
-      break;
-    }
-    childNodeStartOffset += childTextNode.length;
-  }
-  if (!containingChildNode) {
-    return null;
-  }
-
-  documentRange.setStart(containingChildNode, offset - childNodeStartOffset);
-  documentRange.setEnd(containingChildNode, offset - childNodeStartOffset);
-  console.log(documentRange);
-  var boundingRect = documentRange.getBoundingClientRect();
-  console.log(boundingRect);
-  return boundingRect.top;
-}
-
-// Return [[ruleIndex, shortDescription, offset], ...]
-function searchAndComputeIndex(text) {
-
-  var textOffset = text.lastIndexOf("SCHEDULE_WATCHDOG");
-  var scrollOffset = getScrollPositionByOffset(textOffset);
-  return [[0, "SCHEDULE_WATCHDOG", scrollOffset]];
-}
 
 // Listen for messages
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
