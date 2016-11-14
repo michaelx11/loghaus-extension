@@ -32,12 +32,29 @@ function getScrollPositionByOffset(offset) {
   return boundingRect.top;
 }
 
-// Return [[ruleIndex, shortDescription, offset], ...]
-function searchAndComputeIndex(text) {
+function findAllMatches(sourceText, regexStr) {
+  console.log("matching with re: " + regexStr);
+  var re = new RegExp(regexStr,'gi');
 
-  var textOffset = text.lastIndexOf("SCHEDULE_WATCHDOG");
-  var scrollOffset = getScrollPositionByOffset(textOffset);
-  return [[0, "SCHEDULE_WATCHDOG", scrollOffset]];
+  var results = new Array();//this is the results you want
+  while (re.exec(sourceText)){
+    results.push(re.lastIndex);
+  }
+  return results;
+}
+
+// Return [[ruleIndex, shortDescription, offset], ...]
+function searchAndComputeIndex(text, regexStrings, regexDescriptions) {
+  var allMatches = [];
+  for (var i = 0; i < regexStrings.length; i++) {
+    var regexStr = regexStrings[i];
+    var textOffsets = findAllMatches(text, regexStr);
+    for (var u = 0; u < textOffsets.length; u++) {
+      var scrollOffset = getScrollPositionByOffset(textOffsets[u]);
+      allMatches.push([i, regexDescriptions[i], scrollOffset]);
+    }
+  }
+  return allMatches;
 }
 
 // === UI Helper Utilities ===
@@ -73,8 +90,8 @@ function embedDiv(tableOfContents) {
   div.id = 'myDivId';
   div.style.position = 'fixed';
   div.style.top = '0%';
-  div.style.left = '90%';
-  div.style.width = '10%';
+  div.style.left = '80%';
+  div.style.width = '20%';
   div.style.height = '100%';
   div.style.backgroundColor = 'white';
   div.style.opacity = '0.5';
@@ -91,10 +108,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     console.log("runtime listener called!");
     // If the received message has the expected format...
     console.log(msg);
+    var regexStrings = ['SCHEDULE_WATCHDOG'];
+    var regexDescriptions = ['Watchdog Scheduled!'];
     if (msg.text === 'report_back') {
         generateRange();
         var targetText = extractTargetElement();
-        var res = searchAndComputeIndex(targetText.textContent);
+        var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
         var tableOfContents = generateTableOfContents(res);
         embedDiv(tableOfContents);
     }
