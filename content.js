@@ -138,6 +138,7 @@ function embedDiv(tableOfContents) {
   div.style.height = '100%';
   div.style.backgroundColor = 'transparent';
   div.style.opacity = '0.7';
+  div.style.overflow = 'scroll';
 }
 
 // This works for log files where the body contains a pre with text
@@ -149,8 +150,12 @@ function extractTargetElement() {
 // --- Full Generation ---
 
 function fullGeneration() {
-  var regexStrings = ['SCHEDULE_WATCHDOG', 'Snapcode Found'];
-  var regexDescriptions = ['Watchdog Scheduled!', 'Snapcode found!'];
+  var regexStrings = [
+    'onResponseReceived'
+  ];
+  var regexDescriptions = [
+    'On response received'
+  ];
   var colorList = generateColorList(regexStrings.length);
   generateRange();
   var targetText = extractTargetElement();
