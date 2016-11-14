@@ -64,21 +64,37 @@ function searchAndComputeIndex(text, regexStrings, regexDescriptions) {
 
 // === UI Helper Utilities ===
 
+function genPastelColor(){
+  var r = (Math.round(Math.random()* 127) + 50).toString(16);
+  var g = (Math.round(Math.random()* 127) + 50).toString(16);
+  var b = (Math.round(Math.random()* 127) + 70).toString(16);
+  return '#' + r + g + b;
+}
+
+function generateColorList(length) {
+  var colors = []
+  for (var i = 0; i < length; i++) {
+    colors.push(genPastelColor());
+  }
+  return colors;
+}
+
 function scrollGenerator(offset) {
   return function() {
     window.scroll(0, offset);
   }
 }
 
-function generateTableOfContents(listHighlights) {
+function generateTableOfContents(listHighlights, colorList) {
   var tableOfContents = document.createElement( 'ol' );
 
   for (var i = 0; i < listHighlights.length ; i++) {
     var highlight = listHighlights[i];
     var listElement = document.createElement( 'li' );
-    listElement.style.marginBottom = '10px';
+    listElement.style.marginBottom = '5px';
     listElement.innerHTML = highlight[1];
     listElement.onclick = scrollGenerator(highlight[2]);
+    listElement.style.color = colorList[highlight[0]];
     console.log(listElement);
     tableOfContents.append(listElement);
   }
@@ -120,11 +136,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     console.log(msg);
     var regexStrings = ['SCHEDULE_WATCHDOG', 'Snapcode Found'];
     var regexDescriptions = ['Watchdog Scheduled!', 'Snapcode found!'];
+    var colorList = generateColorList(regexStrings.length);
     if (msg.text === 'report_back') {
         generateRange();
         var targetText = extractTargetElement();
         var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
-        var tableOfContents = generateTableOfContents(res);
+        var tableOfContents = generateTableOfContents(res, colorList);
         embedDiv(tableOfContents);
     }
 });
