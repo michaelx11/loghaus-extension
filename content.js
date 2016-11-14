@@ -85,6 +85,14 @@ function scrollGenerator(offset) {
   }
 }
 
+function onMouseOver() {
+  this.style.fontWeight = 'bold';
+}
+
+function onLeave() {
+  this.style.fontWeight = 'normal';
+}
+
 function generateTableOfContents(listHighlights, colorList) {
   var tableOfContents = document.createElement( 'ol' );
 
@@ -94,6 +102,8 @@ function generateTableOfContents(listHighlights, colorList) {
     listElement.style.marginBottom = '5px';
     listElement.innerHTML = highlight[1];
     listElement.onclick = scrollGenerator(highlight[2]);
+    listElement.onmouseover = onMouseOver;
+    listElement.onmouseleave = onLeave;
     listElement.style.color = colorList[highlight[0]];
     console.log(listElement);
     tableOfContents.append(listElement);
@@ -107,7 +117,14 @@ function embedDiv(tableOfContents) {
   if (currentDiv) {
     currentDiv.remove();
   }
-  var div = document.createElement('tableOfContentsDiv');
+  var div = document.createElement('div');
+
+  var header = document.createElement('h3');
+  header.innerHTML = 'Highlights';
+  header.style.textAlign = 'center';
+  header.style.margin = '0px';
+  header.style.padding = '0px';
+  div.append(header);
 
   //append all elements
   document.body.appendChild( div );
@@ -129,19 +146,27 @@ function extractTargetElement() {
   return document.body.children[0];
 }
 
+// --- Full Generation ---
+
+function fullGeneration() {
+  var regexStrings = ['SCHEDULE_WATCHDOG', 'Snapcode Found'];
+  var regexDescriptions = ['Watchdog Scheduled!', 'Snapcode found!'];
+  var colorList = generateColorList(regexStrings.length);
+  generateRange();
+  var targetText = extractTargetElement();
+  var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
+  var tableOfContents = generateTableOfContents(res, colorList);
+  embedDiv(tableOfContents);
+}
+
 // Listen for messages
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     console.log("runtime listener called!");
     // If the received message has the expected format...
     console.log(msg);
-    var regexStrings = ['SCHEDULE_WATCHDOG', 'Snapcode Found'];
-    var regexDescriptions = ['Watchdog Scheduled!', 'Snapcode found!'];
-    var colorList = generateColorList(regexStrings.length);
     if (msg.text === 'report_back') {
-        generateRange();
-        var targetText = extractTargetElement();
-        var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
-        var tableOfContents = generateTableOfContents(res, colorList);
-        embedDiv(tableOfContents);
+        fullGeneration();
+        // Set recompute on resize
+        document.body.onresize = fullGeneration
     }
 });
