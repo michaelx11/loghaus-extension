@@ -1,12 +1,7 @@
-var documentRange = null;
-
 // === Search helper utilities ===
 
-function generateRange() {
-  documentRange = document.createRange();
-}
-
 function getScrollPositionByOffset(offset) {
+  var documentRange = document.createRange();
   var parentPre = extractTargetElement();
   // The parent pre element contains multiple child text nodes
   var childNodeStartOffset = 0;
@@ -26,9 +21,7 @@ function getScrollPositionByOffset(offset) {
 
   documentRange.setStart(containingChildNode, offset - childNodeStartOffset);
   documentRange.setEnd(containingChildNode, offset - childNodeStartOffset);
-  console.log(documentRange);
   var boundingRect = documentRange.getBoundingClientRect();
-  console.log(boundingRect);
   // We need to compute based on current Y, since the rects are relative
   return window.scrollY + boundingRect.top;
 }
@@ -159,10 +152,8 @@ function generateTableOfContents(listHighlights, colorList) {
     listElement.onmouseover = onMouseOver;
     listElement.onmouseleave = onLeave;
     listElement.style.color = colorList[highlight[0]];
-    console.log(listElement);
     tableOfContents.append(listElement);
   }
-  console.log(tableOfContents);
   return tableOfContents;
 }
 
@@ -214,10 +205,7 @@ function fullGeneration() {
       regexStrings.push(rules[i][0]);
       regexDescriptions.push(rules[i][1]);
     }
-    console.log(regexStrings);
-    console.log(regexDescriptions);
     var colorList = generateColorList(regexStrings.length);
-    generateRange();
     var targetText = extractTargetElement();
     var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
     var tableOfContents = generateTableOfContents(res, colorList);
@@ -227,9 +215,7 @@ function fullGeneration() {
 
 // Listen for messages
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    console.log("runtime listener called!");
     // If the received message has the expected format...
-    console.log(msg);
     if (msg.text === 'report_back') {
         fullGeneration();
         // Set recompute on resize
