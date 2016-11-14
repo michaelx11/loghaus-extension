@@ -190,7 +190,7 @@ function embedDiv(tableOfContents) {
   div.style.left = '85%';
   div.style.width = '15%';
   div.style.height = '100%';
-  div.style.backgroundColor = 'transparent';
+  div.style.backgroundColor = 'white';
   div.style.opacity = '0.7';
   div.style.overflow = 'scroll';
 }
