@@ -1,6 +1,16 @@
 // Saves options to chrome.storage
 function save_options() {
   var rulesJson = document.getElementById('rules').value;
+  try {
+    JSON.parse(rulesJson);
+  } catch(err) {
+    var status = document.getElementById('status');
+    status.textContent = "Error parsing JSON: " +  err.message;
+    setTimeout(function() {
+      status.textContent = '';
+    }, 5000);
+    return;
+  }
   chrome.storage.sync.set({
     rulesJsonString: rulesJson
   }, function() {
@@ -24,3 +34,5 @@ function restore_options() {
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click',
     save_options);
+document.getElementById('restore').addEventListener('click',
+    restore_options);
