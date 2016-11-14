@@ -76,6 +76,7 @@ function generateTableOfContents(listHighlights) {
   for (var i = 0; i < listHighlights.length ; i++) {
     var highlight = listHighlights[i];
     var listElement = document.createElement( 'li' );
+    listElement.style.marginBottom = '10px';
     listElement.innerHTML = highlight[1];
     listElement.onclick = scrollGenerator(highlight[2]);
     console.log(listElement);
@@ -102,8 +103,8 @@ function embedDiv(tableOfContents) {
   div.style.left = '80%';
   div.style.width = '20%';
   div.style.height = '100%';
-  div.style.backgroundColor = 'white';
-  div.style.opacity = '0.5';
+  div.style.backgroundColor = 'transparent';
+  div.style.opacity = '0.7';
 }
 
 // This works for log files where the body contains a pre with text
