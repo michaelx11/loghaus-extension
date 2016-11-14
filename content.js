@@ -64,17 +64,71 @@ function searchAndComputeIndex(text, regexStrings, regexDescriptions) {
 
 // === UI Helper Utilities ===
 
-function genPastelColor(){
-  var r = (Math.round(Math.random()* 127) + 50).toString(16);
-  var g = (Math.round(Math.random()* 127) + 50).toString(16);
-  var b = (Math.round(Math.random()* 127) + 70).toString(16);
-  return '#' + r + g + b;
+// http://stackoverflow.com/questions/28860602/pleasing-palette-random-color-generation
+function randomColor(){
+  var golden_ratio_conjugate = 0.618033988749895,
+      h = (Math.random() + golden_ratio_conjugate) % 1 *360,
+      rgb = hsvToRgb(h, 80, 50);
+  return "rgb("+rgb[0]+","+rgb[1]+","+rgb[2]+")";
+}
+
+/**
+ * Converts an HSV color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_and_HSV.
+ * Assumes h is contained in the set [0, 360] and
+ * s and l are contained in the set [0, 100] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   Number  h       The hue
+ * @param   Number  s       The saturation
+ * @param   Number  v       The value
+ * @return  Array           The RGB representation
+ */
+function hsvToRgb(h, s, v){
+  var chroma = s * v / 10000,
+      min = v / 100 - chroma,
+      hdash = h / 60,
+      x = chroma * (1 - Math.abs(hdash % 2 - 1)),
+      r = 0, g = 0, b = 0;
+
+  switch(true){
+    case hdash < 1:
+      r = chroma;
+      g = x;
+      break;
+    case hdash < 2:
+      r = x;
+      g = chroma;
+      break;
+    case hdash < 3:
+      g = chroma;
+      b = x;
+      break;
+    case hdash < 4:
+      g = x;
+      b = chroma;
+      break;
+    case hdash < 5:
+      r = x;
+      b = chroma;
+      break;
+    case hdash <= 6:
+      r = chroma;
+      b = x;
+      break;
+  }
+
+  r += min;
+  g += min;
+  b += min;
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function generateColorList(length) {
   var colors = []
   for (var i = 0; i < length; i++) {
-    colors.push(genPastelColor());
+    colors.push(randomColor());
   }
   return colors;
 }
@@ -133,8 +187,8 @@ function embedDiv(tableOfContents) {
   div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
   div.style.top = '0%';
-  div.style.left = '80%';
-  div.style.width = '20%';
+  div.style.left = '85%';
+  div.style.width = '15%';
   div.style.height = '100%';
   div.style.backgroundColor = 'transparent';
   div.style.opacity = '0.7';
