@@ -173,13 +173,22 @@ function filterFunction() {
   var filterRegex = new RegExp(this.value, "gi");
   var highlightsList = document.getElementById('highlights-list');
   var highlights = highlightsList.childNodes;
+  var numResults = 0;
   for (var i = 0; i < highlights.length; i++) {
     var highlight = highlights[i];
     if (highlight.innerHTML.match(filterRegex)) {
       highlight.hidden = false;
+      numResults++;
     } else {
       highlight.hidden = true;
     }
+  }
+  if (numResults == 0) {
+    document.getElementById("tableOfContentsDiv")
+      .style.backgroundColor = 'rgba(255, 255, 255, 0.0)';
+  } else {
+    document.getElementById("tableOfContentsDiv")
+      .style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
   }
 }
 
