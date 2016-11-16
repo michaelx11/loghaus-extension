@@ -207,7 +207,7 @@ function embedDiv(tableOfContents) {
   // constants
   searchBarHeight = 26;
   searchBarPadding = 4;
-  overlayWidth = 23;
+  overlayWidth = 20;
   leftOverlayOffset = 100 - overlayWidth;
 
   //append all elements
