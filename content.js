@@ -211,7 +211,7 @@ function embedDiv(tableOfContents) {
   div.style.left = leftOverlayOffset + '%';
   div.style.width = overlayWidth + '%';
   div.style.height = '99%';
-  div.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+  div.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
   div.style.overflow = 'scroll';
 
   var searchBarDiv = document.createElement('div');
@@ -222,13 +222,13 @@ function embedDiv(tableOfContents) {
   searchBarDiv.style.height = searchBarHeight + 'px';
   searchBarDiv.style.width = overlayWidth + '%';
   searchBarDiv.style.left = leftOverlayOffset + '%';
-  searchBarDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+  searchBarDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
   searchBarDiv.style.textAlign = 'center';
 
   var searchBarInput = document.createElement('input');
   searchBarInput.type = 'search';
   searchBarInput.placeholder = 'Filter regex ...';
-  searchBarInput.style.width = '98%';
+  searchBarInput.style.width = '96%';
   searchBarInput.style.height = searchBarHeight + 'px';
   searchBarInput.style.borderRadius = '5px';
   // Add keyup search function
