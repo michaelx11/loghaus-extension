@@ -14,7 +14,7 @@
     "scripts": ["background.js"]
   },
   "content_scripts": [{
-    "matches": ["*://*.googleusercontent.com/*"],
+    "matches": ["<all_urls>"],
     "js": ["content.js"]
   }],
   "options_page": "options.html",
