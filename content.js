@@ -198,6 +198,8 @@ function embedDiv(tableOfContents) {
   // constants
   searchBarHeight = 26;
   searchBarPadding = 4;
+  overlayWidth = 23;
+  leftOverlayOffset = 100 - overlayWidth;
 
   //append all elements
   document.body.appendChild( div );
@@ -206,11 +208,10 @@ function embedDiv(tableOfContents) {
   div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
   div.style.top = (searchBarHeight + 2 * searchBarPadding) + 'px';
-  div.style.left = '80%';
-  div.style.width = '20%';
+  div.style.left = leftOverlayOffset + '%';
+  div.style.width = overlayWidth + '%';
   div.style.height = '99%';
-  div.style.backgroundColor = 'white';
-  div.style.opacity = '0.7';
+  div.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
   div.style.overflow = 'scroll';
 
   var searchBarDiv = document.createElement('div');
@@ -219,10 +220,9 @@ function embedDiv(tableOfContents) {
   searchBarDiv.style.marginTop = searchBarPadding + 'px';
   searchBarDiv.style.top = '0%';
   searchBarDiv.style.height = searchBarHeight + 'px';
-  searchBarDiv.style.width = '20%';
-  searchBarDiv.style.left = '80%';
-  searchBarDiv.style.backgroundColor = 'white';
-  searchBarDiv.style.opacity = '0.9';
+  searchBarDiv.style.width = overlayWidth + '%';
+  searchBarDiv.style.left = leftOverlayOffset + '%';
+  searchBarDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
   searchBarDiv.style.textAlign = 'center';
 
   var searchBarInput = document.createElement('input');
