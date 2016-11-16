@@ -26,7 +26,6 @@ function getScrollPositionByOffset(offset) {
 }
 
 function findAllMatches(sourceText, regexStr) {
-  console.log("matching with re: " + regexStr);
   var re = new RegExp(regexStr,'gi');
 
   var results = new Array();//this is the results you want
@@ -37,10 +36,9 @@ function findAllMatches(sourceText, regexStr) {
 }
 
 // Return timestamp
-var LINE_CHAR_LIMIT = 1000;
+var LINE_CHAR_LIMIT = 500;
 function extractTimestamp(text, offset, timestampRegex) {
   // Walk forward until we hit a newline or beginning of text, up to a limit
-  console.log("extracting timestamp!");
   var match = text.substring(Math.max(0, offset - LINE_CHAR_LIMIT), offset).match(timestampRegex);
   // Return error string if no matches
   if (!match || match.length == 0) return "__:__:__";
@@ -154,6 +152,7 @@ function onLeave() {
 function generateTableOfContents(listHighlights, colorList) {
   var tableOfContents = document.createElement( 'ul' );
   tableOfContents.style.listStyleType = "none";
+  tableOfContents.style.paddingLeft = "8px";
 
   for (var i = 0; i < listHighlights.length ; i++) {
     var highlight = listHighlights[i];
