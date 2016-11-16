@@ -151,6 +151,7 @@ function onLeave() {
 
 function generateTableOfContents(listHighlights, colorList) {
   var tableOfContents = document.createElement( 'ul' );
+  tableOfContents.id = 'highlights-list';
   tableOfContents.style.listStyleType = "none";
   tableOfContents.style.paddingLeft = "8px";
 
@@ -168,19 +169,35 @@ function generateTableOfContents(listHighlights, colorList) {
   return tableOfContents;
 }
 
+function filterFunction() {
+  var filterRegex = new RegExp(this.value, "gi");
+  var highlightsList = document.getElementById('highlights-list');
+  var highlights = highlightsList.childNodes;
+  for (var i = 0; i < highlights.length; i++) {
+    var highlight = highlights[i];
+    if (highlight.innerHTML.match(filterRegex)) {
+      highlight.hidden = false;
+    } else {
+      highlight.hidden = true;
+    }
+  }
+}
+
 function embedDiv(tableOfContents) {
   var currentDiv = document.getElementById("tableOfContentsDiv");
+  var oldSearchBarDiv = document.getElementById("loghaus-search-bar");
   if (currentDiv) {
     currentDiv.remove();
   }
+  if (oldSearchBarDiv) {
+    oldSearchBarDiv.remove();
+  }
+
   var div = document.createElement('div');
 
-  var header = document.createElement('h3');
-  header.innerHTML = 'Highlights';
-  header.style.textAlign = 'center';
-  header.style.margin = '0px';
-  header.style.padding = '0px';
-  div.appendChild(header);
+  // constants
+  searchBarHeight = 26;
+  searchBarPadding = 4;
 
   //append all elements
   document.body.appendChild( div );
@@ -188,13 +205,38 @@ function embedDiv(tableOfContents) {
   //set attributes for div
   div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
-  div.style.top = '0%';
+  div.style.top = (searchBarHeight + 2 * searchBarPadding) + 'px';
   div.style.left = '80%';
   div.style.width = '20%';
-  div.style.height = '100%';
+  div.style.height = '99%';
   div.style.backgroundColor = 'white';
   div.style.opacity = '0.7';
   div.style.overflow = 'scroll';
+
+  var searchBarDiv = document.createElement('div');
+  searchBarDiv.id = 'loghaus-search-bar';
+  searchBarDiv.style.position = 'fixed';
+  searchBarDiv.style.marginTop = searchBarPadding + 'px';
+  searchBarDiv.style.top = '0%';
+  searchBarDiv.style.height = searchBarHeight + 'px';
+  searchBarDiv.style.width = '20%';
+  searchBarDiv.style.left = '80%';
+  searchBarDiv.style.backgroundColor = 'white';
+  searchBarDiv.style.opacity = '0.9';
+  searchBarDiv.style.textAlign = 'center';
+
+  var searchBarInput = document.createElement('input');
+  searchBarInput.type = 'search';
+  searchBarInput.placeholder = 'Filter regex ...';
+  searchBarInput.style.width = '98%';
+  searchBarInput.style.height = searchBarHeight + 'px';
+  searchBarInput.style.borderRadius = '5px';
+  // Add keyup search function
+  searchBarInput.oninput = filterFunction;
+
+  searchBarDiv.appendChild(searchBarInput);
+
+  document.body.appendChild(searchBarDiv);
 }
 
 // This works for log files where the body contains a pre with text
