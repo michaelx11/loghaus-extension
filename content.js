@@ -163,7 +163,7 @@ function generateTableOfContents(listHighlights, colorList) {
     listElement.onmouseover = onMouseOver;
     listElement.onmouseleave = onLeave;
     listElement.style.color = colorList[highlight[0]];
-    tableOfContents.append(listElement);
+    tableOfContents.appendChild(listElement);
   }
   return tableOfContents;
 }
@@ -180,11 +180,11 @@ function embedDiv(tableOfContents) {
   header.style.textAlign = 'center';
   header.style.margin = '0px';
   header.style.padding = '0px';
-  div.append(header);
+  div.appendChild(header);
 
   //append all elements
   document.body.appendChild( div );
-  div.append(tableOfContents);
+  div.appendChild(tableOfContents);
   //set attributes for div
   div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
