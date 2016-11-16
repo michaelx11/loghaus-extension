@@ -8,7 +8,6 @@ function getScrollPositionByOffset(offset) {
   var containingChildNode = null;
   for (var i = 0; i < parentPre.childNodes.length; i++) {
     var childTextNode = parentPre.childNodes[i];
-    console.log(childNodeStartOffset + " " + childTextNode.length);
     if (offset >= childNodeStartOffset && offset <= childNodeStartOffset + childTextNode.length) {
       containingChildNode = childTextNode;
       break;
@@ -37,15 +36,27 @@ function findAllMatches(sourceText, regexStr) {
   return results;
 }
 
-// Return [[ruleIndex, shortDescription, offset], ...]
-function searchAndComputeIndex(text, regexStrings, regexDescriptions) {
+// Return timestamp
+var LINE_CHAR_LIMIT = 1000;
+function extractTimestamp(text, offset, timestampRegex) {
+  // Walk forward until we hit a newline or beginning of text, up to a limit
+  console.log("extracting timestamp!");
+  var match = text.substring(Math.max(0, offset - LINE_CHAR_LIMIT), offset).match(timestampRegex);
+  // Return error string if no matches
+  if (!match || match.length == 0) return "__:__:__";
+  return match[match.length - 1]; // get last match
+}
+
+// Return [[ruleIndex, shortDescription, offset, timestamp], ...]
+function searchAndComputeIndex(text, regexStrings, regexDescriptions, timestampRegex) {
   var allMatches = [];
   for (var i = 0; i < regexStrings.length; i++) {
     var regexStr = regexStrings[i];
     var textOffsets = findAllMatches(text, regexStr);
     for (var u = 0; u < textOffsets.length; u++) {
       var scrollOffset = getScrollPositionByOffset(textOffsets[u]);
-      allMatches.push([i, regexDescriptions[i], scrollOffset]);
+      var timestampString = extractTimestamp(text, textOffsets[u], timestampRegex);
+      allMatches.push([i, regexDescriptions[i], scrollOffset, timestampString]);
     }
   }
 
@@ -141,13 +152,14 @@ function onLeave() {
 }
 
 function generateTableOfContents(listHighlights, colorList) {
-  var tableOfContents = document.createElement( 'ol' );
+  var tableOfContents = document.createElement( 'ul' );
+  tableOfContents.style.listStyleType = "none";
 
   for (var i = 0; i < listHighlights.length ; i++) {
     var highlight = listHighlights[i];
     var listElement = document.createElement( 'li' );
     listElement.style.marginBottom = '5px';
-    listElement.innerHTML = highlight[1];
+    listElement.innerHTML = highlight[3] + " " + highlight[1];
     listElement.onclick = scrollGenerator(highlight[2]);
     listElement.onmouseover = onMouseOver;
     listElement.onmouseleave = onLeave;
@@ -178,8 +190,8 @@ function embedDiv(tableOfContents) {
   div.id = 'tableOfContentsDiv';
   div.style.position = 'fixed';
   div.style.top = '0%';
-  div.style.left = '85%';
-  div.style.width = '15%';
+  div.style.left = '80%';
+  div.style.width = '20%';
   div.style.height = '100%';
   div.style.backgroundColor = 'white';
   div.style.opacity = '0.7';
@@ -196,7 +208,8 @@ function extractTargetElement() {
 
 function fullGeneration() {
   chrome.storage.sync.get({
-    rulesJsonString: "",
+    timestampRegexString: "",
+    rulesJsonString: ""
   }, function(items) {
     var rules = JSON.parse(items.rulesJsonString);
     var regexStrings = [];
@@ -207,7 +220,15 @@ function fullGeneration() {
     }
     var colorList = generateColorList(regexStrings.length);
     var targetText = extractTargetElement();
-    var res = searchAndComputeIndex(targetText.textContent, regexStrings, regexDescriptions);
+    if (items.timestampRegexString.length == 0) {
+      // Default timestamp regex
+      items.timestampRegexString = "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{0,3}";
+    }
+    var res = searchAndComputeIndex(targetText.textContent,
+      regexStrings,
+      regexDescriptions,
+      new RegExp(items.timestampRegexString, 'gi')
+    );
     var tableOfContents = generateTableOfContents(res, colorList);
     embedDiv(tableOfContents);
   });
