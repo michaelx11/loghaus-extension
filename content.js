@@ -256,8 +256,8 @@ function fullGeneration() {
     var regexStrings = [];
     var regexDescriptions = [];
     for (var i = 0; i < rules.length; i++) {
-      regexStrings.push(rules[i][0]);
-      regexDescriptions.push(rules[i][1]);
+      regexDescriptions.push(rules[i][0]);
+      regexStrings.push(rules[i][1]);
     }
     var colorList = generateColorList(regexStrings.length);
     var targetText = extractTargetElement();
