@@ -272,7 +272,7 @@ function fullGeneration() {
     var targetText = extractTargetElement();
     if (items.timestampRegexString.length == 0) {
       // Default timestamp regex
-      items.timestampRegexString = "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{0,3}";
+      items.timestampRegexString = "\\d{1,2}:\\d{2}:\\d{2}\\.\\d";
     }
     var res = searchAndComputeIndex(targetText.textContent,
       regexStrings,
